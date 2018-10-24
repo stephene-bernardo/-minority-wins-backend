@@ -1,0 +1,24 @@
+{
+  "name": "minority-wins-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stephene-bernardo/minority-wins-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stephene-bernardo/minority-wins-backend/issues"
+  },
+  "homepage": "https://github.com/stephene-bernardo/minority-wins-backend#readme",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "socket.io": "^2.1.1",
+    "ws": "^6.1.0"
+  }
+}
