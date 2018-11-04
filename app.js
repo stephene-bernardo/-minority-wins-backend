@@ -4,17 +4,18 @@ var crypto = require("crypto");
 let registeredPathnames = new Map();
 
 const server = http.createServer((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
+  
   if(req.url === '/createroom'){
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    var id = `/${crypto.randomBytes(20).toString('hex')}`;
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    var id = `${crypto.randomBytes(20).toString('hex')}`;
     const wss = new WebSocket.Server({ noServer: true });
     setupWssConnection(wss);
     registeredPathnames.set(id, wss);
-    res.write('room created ' + id);
-    res.end();
+    res.write(`{"roomid":"${id}"}`);
   } else if(RegExp('^\/sendquestions\/\w*').test(req.url) && req.method == 'POST'){
     var id = /(\/sendquestions)(\/\w*)/.exec(req.url)[2]
- 
 
     var body = '';
     req.on('data', function (data) {
@@ -25,20 +26,20 @@ const server = http.createServer((req, res) => {
         console.log( registeredPathnames.get(id));
         registeredPathnames.get(id).clients.forEach((function each(client) {
           if ( client.readyState === WebSocket.OPEN) {
-            client.send("hillo");
+            client.send(body);
           }
         }))
     });
     res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end();
   }else{
     res.write('no url');
-    res.end();
+
   }
+  res.end();
 });
 
 server.on('upgrade', function upgrade(request, socket, head) {
-  const pathname = (request.url);
+  const pathname = (request.url).replace('/','');
   if (registeredPathnames.has(pathname)) {
     handleUpgrade(pathname, request, socket, head);
   } else {
