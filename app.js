@@ -5,6 +5,7 @@ var crypto = require("crypto");
 let WebsocketConnection = require('./WebsocketConnection')
 let registeredPathnames = new Map();
 
+
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
@@ -26,17 +27,26 @@ const server = http.createServer((req, res) => {
     req.on('end', function () {
       registeredPathnames.get(id).getConnection().clients.forEach((function each(client) {
         if (client.readyState === WebSocket.OPEN) {
-          registeredPathnames.get(id).addQuestions(body)
-          body.id = registeredPathnames.get(id).addQuestions(body)
-          console.log(body)
-          client.send(body);
+          jsonBody = JSON.parse(body);
+          let questionId = registeredPathnames.get(id).addQuestions(jsonBody)
+          jsonBody['uid'] = questionId;
+          // console.log(body['uid'])
+          // console.log(body)
+          client.send(JSON.stringify(jsonBody));
         }
       }))
     });
     res.write(`{}`);
   } else if(RegExp('^\/sendanswer\/.+\/.+').test(req.url)){
-    console.log(/^\/sendanswer\/(.+)\/(.+)/.exec(req.url))
-    res.write('has url');
+    let pathParam = /^\/sendanswer\/(.+)\/(.+)\/(.+)/.exec(req.url)
+    let websocketId = pathParam[1]
+    let questionPollId =  pathParam[2]
+    let answer = pathParam[3]
+
+    let questionPoll = registeredPathnames.get(websocketId).getQuestion(questionPollId)
+    questionPoll.addCountToChoice(answer)
+    console.log(questionPoll.getChoicesPoll())
+    res.write('{}');
   } else {
     res.write('no url');
   }

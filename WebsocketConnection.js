@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 var crypto = require("crypto");
+let QuestionPoll = require('./QuestionPoll')
 class WebsocketConnection {
     constructor(wss, id){
         this.questions = []
@@ -11,8 +12,13 @@ class WebsocketConnection {
 
     addQuestions(question) {
         var id = `${crypto.randomBytes(20).toString('hex')}`;
-        this.questions.set(id, question)
+        let questionPoll = new QuestionPoll(question)
+        this.questions.set(id, questionPoll)
         return id
+    }
+
+    getQuestion(id){
+      return this.questions.get(id);
     }
 
     getConnection(){
