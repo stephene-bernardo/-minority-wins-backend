@@ -24,18 +24,31 @@ const server = http.createServer((req, res) => {
     req.on('data', function (data) {
       body += data;
     });
+    let questionId;
     req.on('end', function () {
+      jsonBody = JSON.parse(body);
+      questionId = registeredPathnames.get(id).addQuestions(jsonBody)
+      jsonBody['uid'] = questionId;
       registeredPathnames.get(id).getConnection().clients.forEach((function each(client) {
         if (client.readyState === WebSocket.OPEN) {
-          jsonBody = JSON.parse(body);
-          let questionId = registeredPathnames.get(id).addQuestions(jsonBody)
-          jsonBody['uid'] = questionId;
-          // console.log(body['uid'])
-          // console.log(body)
           client.send(JSON.stringify(jsonBody));
         }
       }))
-    });
+    }); 
+
+    setTimeout(()=> {
+      registeredPathnames.get(id).getConnection().clients.forEach((function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+          let questionObject = registeredPathnames.get(id).getQuestion(questionId);
+          let choicesPoll = questionObject.getChoicesPoll()
+          client.send(JSON.stringify({
+            isEndWaiting: true, 
+            choicesPoll: choicesPoll, 
+            questionId: questionId, 
+            question: questionObject.getQuestion()}));
+        }
+      }))
+    }, 30000)
     res.write(`{}`);
   } else if(RegExp('^\/sendanswer\/.+\/.+').test(req.url)){
     let pathParam = /^\/sendanswer\/(.+)\/(.+)\/(.+)/.exec(req.url)
