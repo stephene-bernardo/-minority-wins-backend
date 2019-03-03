@@ -75,7 +75,7 @@ server.on('upgrade', function upgrade(request, socket, head) {
   }
 });
 
-server.listen(8080);
+server.listen(process.env.PORT || 8080);
 
 function handleUpgrade(pathname, request, socket, head) {
   registeredPathnames.get(pathname).getConnection().
