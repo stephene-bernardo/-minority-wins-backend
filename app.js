@@ -35,8 +35,9 @@ const server = http.createServer((req, res) => {
         }
       }))
     }); 
-
+    console.log(`before timeout ${questionId}`)
     setTimeout(()=> {
+      console.log(`after timeout ${questionId}`)
       registeredPathnames.get(id).getConnection().clients.forEach((function each(client) {
         if (client.readyState === WebSocket.OPEN) {
           let questionObject = registeredPathnames.get(id).getQuestion(questionId);
