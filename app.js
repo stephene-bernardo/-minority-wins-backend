@@ -25,6 +25,7 @@ const server = http.createServer((req, res) => {
       body += data;
     });
     let questionId;
+    console.log("is this logging????")
     req.on('end', function () {
       jsonBody = JSON.parse(body);
       questionId = registeredPathnames.get(id).addQuestions(jsonBody)
