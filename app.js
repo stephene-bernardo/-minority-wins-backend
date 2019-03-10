@@ -29,8 +29,11 @@ const server = http.createServer((req, res) => {
       jsonBody = JSON.parse(body);
       questionId = registeredPathnames.get(id).addQuestions(jsonBody)
       jsonBody['uid'] = questionId;
+      console.log("is question "+ questionId)
       registeredPathnames.get(id).getConnection().clients.forEach((function each(client) {
+        console.log("websocket client")
         if (client.readyState === WebSocket.OPEN) {
+          console.log("websocket open")
           client.send(JSON.stringify(jsonBody));
         }
       }))
