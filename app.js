@@ -21,11 +21,13 @@ const server = http.createServer((req, res) => {
   } else if (RegExp('^\/sendquestions\/\w*').test(req.url) && req.method == 'POST') {
     var id = /(\/sendquestions)(\/\w*)/.exec(req.url)[2].replace('/', '')
     var body = '';
+    console.log("is this data logging????")
     req.on('data', function (data) {
       body += data;
+      console.log(body)
     });
     let questionId;
-    console.log("is this logging????")
+    console.log("is this end logging????")
     req.on('end', function () {
       jsonBody = JSON.parse(body);
       questionId = registeredPathnames.get(id).addQuestions(jsonBody)
