@@ -34,22 +34,24 @@ const server = http.createServer((req, res) => {
           client.send(JSON.stringify(jsonBody));
         }
       }))
+
+      console.log(`before timeout ${questionId}`)
+      setTimeout(()=> {
+        console.log(`after timeout ${questionId}`)
+        registeredPathnames.get(id).getConnection().clients.forEach((function each(client) {
+          if (client.readyState === WebSocket.OPEN) {
+            let questionObject = registeredPathnames.get(id).getQuestion(questionId);
+            let choicesPoll = questionObject.getChoicesPoll()
+            client.send(JSON.stringify({
+              isEndWaiting: true, 
+              choicesPoll: choicesPoll, 
+              questionId: questionId, 
+              question: questionObject.getQuestion()}));
+          }
+        }))
+      }, 30000)
     }); 
-    console.log(`before timeout ${questionId}`)
-    setTimeout(()=> {
-      console.log(`after timeout ${questionId}`)
-      registeredPathnames.get(id).getConnection().clients.forEach((function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
-          let questionObject = registeredPathnames.get(id).getQuestion(questionId);
-          let choicesPoll = questionObject.getChoicesPoll()
-          client.send(JSON.stringify({
-            isEndWaiting: true, 
-            choicesPoll: choicesPoll, 
-            questionId: questionId, 
-            question: questionObject.getQuestion()}));
-        }
-      }))
-    }, 30000)
+   
     res.write(`{}`);
   } else if(RegExp('^\/sendanswer\/.+\/.+').test(req.url)){
     let pathParam = /^\/sendanswer\/(.+)\/(.+)\/(.+)/.exec(req.url)
