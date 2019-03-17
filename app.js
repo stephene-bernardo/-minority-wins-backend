@@ -6,7 +6,7 @@ let WebsocketConnection = require('./WebsocketConnection')
 let registeredPathnames = new Map();
 
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
@@ -22,13 +22,13 @@ const server = http.createServer((req, res) => {
     var id = /(\/sendquestions)(\/\w*)/.exec(req.url)[2].replace('/', '')
     var body = '';
     console.log("is this data logging????")
-    req.on('data', function (data) {
+    await req.on('data', function (data) {
       body += data;
       console.log(body)
     });
     let questionId;
     console.log("is this end logging????")
-    req.on('end', function () {
+    await req.on('end', function () {
       jsonBody = JSON.parse(body);
       questionId = registeredPathnames.get(id).addQuestions(jsonBody)
       jsonBody['uid'] = questionId;
