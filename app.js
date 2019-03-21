@@ -2,7 +2,7 @@
 const http = require('http');
 const WebSocket = require('ws');
 var crypto = require("crypto");
-let WebsocketConnection = require('./WebsocketConnection')
+let WebsocketConnection = require('./src/WebsocketConnection')
 let registeredPathnames = new Map();
 
 
