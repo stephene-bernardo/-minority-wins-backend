@@ -15,13 +15,13 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     var id = `${crypto.randomBytes(20).toString('hex')}`;
     const wss = new WebSocket.Server({ noServer: true });
+
     let websocketConnection = new WebsocketConnection(wss,id)
     registeredPathnames.set(id, websocketConnection);
     res.write(`{"roomid":"${id}"}`);
   } else if (RegExp('^\/sendquestions\/\w*').test(req.url) && req.method == 'POST') {
     var id = /(\/sendquestions)(\/\w*)/.exec(req.url)[2].replace('/', '')
     var body = '';
-    console.log("is this data logging????")
     await req.on('data', function (data) {
       body += data;
       console.log(body)
