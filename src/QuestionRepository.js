@@ -1,9 +1,7 @@
 let crypto = require("crypto");
 
 class QuestionRepository {
-    constructor(wss, id){
-        this.id = id
-        this.wss = wss;
+    constructor(){
         this.questions = new Map();
     }
 

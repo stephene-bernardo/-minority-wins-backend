@@ -19,7 +19,7 @@ const server = http.createServer(async (req, res) => {
     const wss = new WebSocket.Server({ noServer: true });
 
     let websocketCreator = new WebsocketCreator(wss);
-    let websocketConnection = new QuestionRepository(wss,id)
+    let websocketConnection = new QuestionRepository()
     registeredPathnames.set(id, {questions: websocketConnection, websocketconnection: websocketCreator});
     res.write(`{"roomid":"${id}"}`);
   } else if (RegExp('^\/sendquestions\/\w*').test(req.url) && req.method == 'POST') {
