@@ -1,43 +1,47 @@
 const WebSocket = require('ws');
 
 class WebsocketCreator {
-    constructor(wss) {
-        this.wss = wss;
-        this.population = 0;
-        this.wss.on('connection', (ws) => this.onConnection(ws));
-      }
+  constructor(wss) {
+      this.wss = wss;
+      this.population = 0;
+      this.wss.on('connection', (ws) => this.onConnection(ws));
+  }
 
-      onConnection(ws){
-        this.population++;
-        console.log(this.population)
-        this.wss.clients.forEach((client) => {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({population: this.population}));
-          }
-        });
-    
-        ws.on('message', (message) => this.onMessage(message));
-    
-        ws.on('close', () => this.onClose())
+  getWebsocket() {
+    return this.wss;
+  }
+  
+  onConnection(ws){
+    this.population++;
+    console.log(this.population)
+    this.wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({population: this.population}));
       }
+    });
 
-      onMessage(message) {
-        this.wss.clients.forEach(function each(client) {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(message);
-          }
-        });
-      }
+    ws.on('message', (message) => this.onMessage(message));
 
-      onClose () {
-        this.population--;
-        console.log(`${this.id} connection: ${this.population}`)
-      }
+    ws.on('close', () => this.onClose())
+  }
 
-      getPopulation() {
-        return this.population;
+  onMessage(message) {
+    this.wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
       }
-    }
+    });
+  }
+
+  onClose () {
+    this.population--;
+    console.log(`${this.id} connection: ${this.population}`)
+  }
+
+  getPopulation() {
+    return this.population;
+  }
+}
 
 
 module.exports = WebsocketCreator
